@@ -21,8 +21,12 @@ exports.handler = async function handler({ workspace, key }) {
         await fsPromises.writeFile(`/tmp/workspaces/${workspace}/cli.conf.yaml`, `kong_admin_token: '${token}'`);
         console.log(`Token written to: /tmp/workspaces/${workspace}/cli.conf.yaml`)
 
+        console.log(`Changing dir to /tmp`)
+
+        process.chdir('/tmp');
+
         const { stdout: version } = await exec(taskDir + '/node_modules/kong-portal-cli/bin/src/portal.js --version');
-        const { stdout: enable } = await exec(taskDir + './node_modules/kong-portal-cli/bin/src/portal.js deploy -D ' + workspace);
+        const { stdout: enable } = await exec(taskDir + '/node_modules/kong-portal-cli/bin/src/portal.js deploy -D ' + workspace);
 
         return {
             statusCode: 200,
