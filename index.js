@@ -8,6 +8,7 @@ const fsPromises = require("fs").promises;
 const bucketName = process.env.BUCKET_NAME;
 const filePath = process.env.FILE_PATH;
 const ssmPath = process.env.KONG_ADMIN_TOKEN_NAME;
+const kongAdminUrl = process.env.KONG_ADMIN_URL;
 const taskDir = process.env.LAMBDA_TASK_ROOT
 
 exports.handler = async function handler({ workspace, key }) {
@@ -18,12 +19,14 @@ exports.handler = async function handler({ workspace, key }) {
 
         await extract.file(`/tmp/${workspace}.tar.gz`, '/tmp/');
 
-        await fsPromises.writeFile(`/tmp/workspaces/${workspace}/cli.conf.yaml`, `kong_admin_token: '${token}'`);
+        await fsPromises.writeFile(`/tmp/workspaces/${workspace}/cli.conf.yaml`, `kong_admin_token: '${token}'\nkong_admin_url: ${kongAdminUrl}`);
         console.log(`Token written to: /tmp/workspaces/${workspace}/cli.conf.yaml`)
 
-        console.log(`Changing dir to /tmp`)
+        console.log(`Changing dir to /tmp`);
 
         process.chdir('/tmp');
+
+        console.log(`Deploying workspace: ${workspace} to endpoint: ${kongAdminUrl}`);
 
         const { stdout: version } = await exec(taskDir + '/node_modules/kong-portal-cli/bin/src/portal.js --version');
         const { stdout: enable } = await exec(taskDir + '/node_modules/kong-portal-cli/bin/src/portal.js deploy -D ' + workspace);
