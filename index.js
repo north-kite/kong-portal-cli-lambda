@@ -11,7 +11,7 @@ const ssmPath = process.env.KONG_ADMIN_TOKEN_NAME;
 const kongAdminUrl = process.env.KONG_ADMIN_URL;
 const taskDir = process.env.LAMBDA_TASK_ROOT
 
-exports.handler = async function handler({ workspace, key }) {
+exports.handler = async function handler({ workspace, key, preserve = false }) {
     try {
         const token = await ssm.getParameter(ssmPath);
 
@@ -29,7 +29,17 @@ exports.handler = async function handler({ workspace, key }) {
         console.log(`Deploying workspace: ${workspace} to endpoint: ${kongAdminUrl}`);
 
         const { stdout: version } = await exec(taskDir + '/node_modules/kong-portal-cli/bin/src/portal.js --version');
-        const { stdout: enable } = await exec(taskDir + '/node_modules/kong-portal-cli/bin/src/portal.js deploy -D ' + workspace);
+
+        if(preserve){
+            console.log(`Preserve flag set to true, deploying with preservation`)
+            flag = "-P "
+        }
+        else{
+            console.log(`Preserve flag set to false, deploying without preservation`)
+            flag = ""
+        }
+
+        const { stdout: enable } = await exec(taskDir + '/node_modules/kong-portal-cli/bin/src/portal.js deploy -D ' + flag + workspace);
 
         return {
             statusCode: 200,
