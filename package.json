@@ -4,6 +4,6 @@
   "dependencies": {
     "aws-sdk": "^2.1030.0",
     "inly": "^4.0.8",
-    "kong-portal-cli": "^3.3.0"
+    "kong-portal-cli": "^3.3.1"
   }
 }
