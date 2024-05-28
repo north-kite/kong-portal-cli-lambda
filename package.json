@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "aws-sdk": "^2.1031.0",
-    "inly": "^4.0.8",
+    "inly": "^5.0.0",
     "kong-portal-cli": "^3.6.0"
   }
 }
